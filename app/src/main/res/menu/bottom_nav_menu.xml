@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_inicio"
+        android:title="Inicio"
+        android:icon="@android:drawable/ic_menu_today"/>
+    <item
+        android:id="@+id/nav_consultar"
+        android:title="Consultar"
+        android:icon="@android:drawable/ic_menu_search"/>
+    <item
+        android:id="@+id/nav_salir"
+        android:title="Salir"
+        android:icon="@android:drawable/ic_lock_power_off"/>
+</menu>

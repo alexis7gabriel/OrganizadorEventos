@@ -1,0 +1,33 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_añadir_evento"
+        android:title="Añadir Eventos"
+        android:icon="@android:drawable/ic_input_add"/>
+
+    <item
+        android:id="@+id/nav_consultar_modificar"
+        android:title="Consultar y Modificación de Eventos"
+        android:icon="@android:drawable/ic_menu_edit"/>
+
+    <item
+        android:id="@+id/nav_respaldo"
+        android:title="Realizar Respaldo"
+        android:icon="@android:drawable/ic_menu_upload"/>
+
+    <item
+        android:id="@+id/nav_restaurar"
+        android:title="Restaurar datos"
+        android:icon="@android:drawable/ic_menu_revert"/>
+
+    <item
+        android:id="@+id/nav_acerca_de"
+        android:title="Acerca de.."
+        android:icon="@android:drawable/ic_menu_info_details"/>
+
+    <item
+        android:id="@+id/nav_salir_drawer"
+        android:title="Salir"
+        android:icon="@android:drawable/ic_lock_power_off"/>
+
+</menu>

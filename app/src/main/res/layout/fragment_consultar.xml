@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Tabs de tipo consulta -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayoutConsulta"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="fixed"
+            app:tabGravity="fill">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Por rango"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Por año"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Por día"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Por mes"/>
+        </com.google.android.material.tabs.TabLayout>
+
+        <!-- Filtro Categoría con TabLayout -->
+        <TextView
+            android:text="Categoría:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabCategoriaFiltro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable"
+            android:layout_marginTop="8dp">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cita"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Junta"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entrega de Proyecto"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Examen"/>
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Otro"/>
+        </com.google.android.material.tabs.TabLayout>
+
+        <!-- Fechas rango -->
+        <LinearLayout
+            android:id="@+id/layoutFechas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <EditText
+                android:id="@+id/etFechaInicial"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Fecha Inicial"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="date"/>
+
+            <View
+                android:layout_width="8dp"
+                android:layout_height="wrap_content"/>
+
+            <EditText
+                android:id="@+id/etFechaFinal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Fecha Final"
+                android:focusable="false"
+                android:clickable="true"
+                android:inputType="date"/>
+        </LinearLayout>
+
+        <!-- Botón Consultar -->
+        <Button
+            android:id="@+id/btnConsultar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Consultar"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Búsqueda -->
+        <EditText
+            android:id="@+id/etBusqueda"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Buscar..."
+            android:layout_marginTop="12dp"
+            android:inputType="text"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#EEEEEE"
+            android:padding="6dp"
+            android:layout_marginTop="12dp">
+
+            <TextView android:text="Fecha" android:textStyle="bold" android:layout_weight="1"
+                android:layout_width="0dp" android:layout_height="wrap_content" />
+
+            <TextView android:text="Hora" android:textStyle="bold" android:layout_weight="1"
+                android:layout_width="0dp" android:layout_height="wrap_content" />
+
+            <TextView android:text="Categoría" android:textStyle="bold" android:layout_weight="1"
+                android:layout_width="0dp" android:layout_height="wrap_content" />
+
+            <TextView android:text="Status" android:textStyle="bold" android:layout_weight="1"
+                android:layout_width="0dp" android:layout_height="wrap_content" />
+
+            <TextView android:text="Descripción" android:textStyle="bold" android:layout_weight="2"
+                android:layout_width="0dp" android:layout_height="wrap_content" />
+        </LinearLayout>
+
+
+        <!-- RecyclerView dentro de ScrollView: cuidado con el height -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvEventos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never"/>
+
+    </LinearLayout>
+</ScrollView>

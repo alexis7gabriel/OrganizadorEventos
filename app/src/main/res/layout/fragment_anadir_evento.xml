@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Categorías con TabLayout -->
+        <TextView
+            android:text="Categoría:"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tab_categoria"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:tabMode="scrollable">
+
+            <com.google.android.material.tabs.TabItem android:text="Cita"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem android:text="Junta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem android:text="Entrega de Proyecto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem android:text="Examen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <com.google.android.material.tabs.TabItem android:text="Otro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </com.google.android.material.tabs.TabLayout>
+
+        <!-- Fecha -->
+        <TextView
+            android:text="Fecha:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_fecha"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="dd/mm/aaaa"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="date" />
+
+        <!-- Hora -->
+        <TextView
+            android:text="Hora:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_hora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="--:--"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="time" />
+
+        <!-- Descripción -->
+        <TextView
+            android:text="Descripción:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_descripcion"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:hint="Descripción breve"
+            android:gravity="top"
+            android:inputType="textMultiLine" />
+
+        <!-- Status -->
+        <TextView
+            android:text="Status:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spinner_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Ubicación -->
+        <TextView
+            android:text="Ubicación:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:id="@+id/et_ubicacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Seleccionar ubicación"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none" />
+
+        <!-- Contacto -->
+        <TextView
+            android:text="Contacto:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spinner_contacto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Recordatorio -->
+        <TextView
+            android:text="Recordatorio:"
+            android:textSize="16sp"
+            android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <Spinner
+            android:id="@+id/spinner_recordatorio"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- Botón Guardar -->
+        <Button
+            android:id="@+id/btn_guardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar"
+            android:layout_marginTop="24dp" />
+    </LinearLayout>
+</ScrollView>
