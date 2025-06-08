@@ -1,4 +1,4 @@
-package com.example.organizadoreventos
+package com.example.organizadoreventos.ui
 
 import android.Manifest
 import android.app.Activity
@@ -14,12 +14,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels // Importa viewModels
+import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentAnadirEventoBinding
+import com.example.organizadoreventos.viewmodel.EventoViewModel // Importa tu EventoViewModel
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 
 class AnadirEventoFragment : Fragment() {
 
@@ -27,6 +31,14 @@ class AnadirEventoFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val REQUEST_CONTACTS = 1001
+
+    // Declara e inicializa el ViewModel para este Fragment
+    private val eventoViewModel: EventoViewModel by viewModels()
+
+    // Formatos de fecha y hora para consistencia y manejo de Locale
+    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    private val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+
 
     private val mapLauncher = registerForActivityResult(
         androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult()
@@ -67,8 +79,9 @@ class AnadirEventoFragment : Fragment() {
         binding.etFecha.setOnClickListener {
             val c = Calendar.getInstance()
             val dpd = DatePickerDialog(requireContext(), { _, year, month, day ->
-                val date = String.format("%02d/%02d/%04d", day, month + 1, year)
-                binding.etFecha.setText(date)
+                val selectedDate = Calendar.getInstance()
+                selectedDate.set(year, month, day)
+                binding.etFecha.setText(dateFormat.format(selectedDate.time)) // Usa dateFormat
             }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH))
             dpd.show()
         }
@@ -76,8 +89,10 @@ class AnadirEventoFragment : Fragment() {
         binding.etHora.setOnClickListener {
             val c = Calendar.getInstance()
             val tpd = TimePickerDialog(requireContext(), { _, hour, minute ->
-                val hora = String.format("%02d:%02d", hour, minute)
-                binding.etHora.setText(hora)
+                val selectedTime = Calendar.getInstance()
+                selectedTime.set(Calendar.HOUR_OF_DAY, hour)
+                selectedTime.set(Calendar.MINUTE, minute)
+                binding.etHora.setText(timeFormat.format(selectedTime.time)) // Usa timeFormat
             }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true)
             tpd.show()
         }
@@ -161,20 +176,33 @@ class AnadirEventoFragment : Fragment() {
         val contacto = binding.spinnerContacto.selectedItem?.toString() ?: "No seleccionado"
         val recordatorio = binding.spinnerRecordatorio.selectedItem.toString()
 
-        val resumen = """
-        Evento creado:
-        Categoría: $categoria
-        Fecha: $fecha
-        Hora: $hora
-        Descripción: $descripcion
-        Status: $status
-        Ubicación: $ubicacion
-        Contacto: $contacto
-        Recordatorio: $recordatorio
-    """.trimIndent()
+        // Validaciones básicas de campos
+        if (fecha.isEmpty() || hora.isEmpty() || descripcion.isEmpty()) {
+            Toast.makeText(requireContext(), "Por favor, completa todos los campos obligatorios.", Toast.LENGTH_SHORT).show()
+            return // Sale de la función si algún campo está vacío
+        }
 
-        Toast.makeText(requireContext(), resumen, Toast.LENGTH_LONG).show()
 
+        // Crear un objeto Evento
+        val evento = Evento(
+            idUsuario = 1,
+            fecha = fecha,
+            hora = hora,
+            categoria = categoria,
+            status = status,
+            descripcion = descripcion,
+            contacto = contacto,
+            ubicacion = "ubicacion",
+            recordatorio = recordatorio
+        )
+
+        // Insertar el evento en la base de datos a través del ViewModel
+        eventoViewModel.insertarEvento(evento)
+
+        // Mostrar un mensaje de confirmación
+        Toast.makeText(requireContext(), "Evento guardado exitosamente", Toast.LENGTH_LONG).show()
+
+        // Para ver los datos en el log
         Log.d("EventoGuardado", "--- Datos del Evento ---")
         Log.d("EventoGuardado", "Categoría: $categoria")
         Log.d("EventoGuardado", "Fecha: $fecha")
@@ -184,8 +212,17 @@ class AnadirEventoFragment : Fragment() {
         Log.d("EventoGuardado", "Ubicación: $ubicacion")
         Log.d("EventoGuardado", "Contacto: $contacto")
         Log.d("EventoGuardado", "Recordatorio: $recordatorio")
-    }
 
+        // Limpiar campos después de guardar (opcional)
+        binding.etFecha.setText("")
+        binding.etHora.setText("")
+        binding.etDescripcion.setText("")
+        binding.etUbicacion.setText("")
+        binding.spinnerStatus.setSelection(0)
+        binding.spinnerContacto.setSelection(0)
+        binding.spinnerRecordatorio.setSelection(0)
+        binding.tabCategoria.getTabAt(0)?.select() // Seleccionar la primera categoría
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

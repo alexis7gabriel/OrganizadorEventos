@@ -1,4 +1,4 @@
-package com.example.organizadoreventos
+package com.example.organizadoreventos.ui
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -7,11 +7,16 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RadioButton
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentConsultarBinding
+import com.example.organizadoreventos.ui.adapters.EventosAdapter
+import com.example.organizadoreventos.viewmodel.EventoViewModel
 import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -22,9 +27,10 @@ class ConsultarFragment : Fragment() {
 
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
-    private val eventosTotales = mutableListOf<Evento>()
-    private val eventosFiltrados = mutableListOf<Evento>()
     private lateinit var adapter: EventosAdapter
+
+    // ViewModel para acceder a los datos
+    private val eventoViewModel: EventoViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentConsultarBinding.inflate(inflater, container, false)
@@ -34,14 +40,23 @@ class ConsultarFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Configuración inicial
         setupTabs()
         setupDatePickers()
         setupRecyclerView()
         setupBusqueda()
         setupBotonConsultar()
 
-        cargarEventosSimulados()
-        aplicarFiltro() // mostrar todos inicialmente
+        // Observar los eventos desde la base de datos
+        eventoViewModel.todosLosEventos.observe(viewLifecycleOwner) { eventos ->
+            // Aquí puedes ver todos los eventos en la consola
+            eventos.forEach {
+                println("📅 Evento: ${it.fecha} - ${it.descripcion}")
+            }
+
+            // Filtrar y actualizar la lista
+            aplicarFiltro()
+        }
     }
 
     private fun setupTabs() {
@@ -106,7 +121,7 @@ class ConsultarFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        adapter = EventosAdapter(eventosFiltrados)
+        adapter = EventosAdapter(emptyList())
         binding.rvEventos.layoutManager = LinearLayoutManager(requireContext())
         binding.rvEventos.adapter = adapter
     }
@@ -114,6 +129,7 @@ class ConsultarFragment : Fragment() {
     private fun setupBusqueda() {
         binding.etBusqueda.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
+                // Al cambiar el texto de búsqueda, aplicar filtro
                 aplicarFiltro()
             }
 
@@ -124,100 +140,69 @@ class ConsultarFragment : Fragment() {
 
     private fun setupBotonConsultar() {
         binding.btnConsultar.setOnClickListener {
+            // Al hacer clic en el botón Consultar, aplicar filtro
             aplicarFiltro()
         }
     }
 
     private fun aplicarFiltro() {
-        val textoBusqueda = binding.etBusqueda.text.toString().trim().lowercase(Locale.getDefault())
-        val categoriaSeleccionada = getCategoriaSeleccionada()
-        val tabPos = binding.tabLayoutConsulta.selectedTabPosition
+        // Aquí obtenemos los eventos desde el ViewModel
+        eventoViewModel.todosLosEventos.value?.let { eventos ->
+            val textoBusqueda = binding.etBusqueda.text.toString().trim().lowercase(Locale.getDefault())
+            val categoriaSeleccionada = getCategoriaSeleccionada()
+            val tabPos = binding.tabLayoutConsulta.selectedTabPosition
 
-        val fechaInicialStr = binding.etFechaInicial.text.toString()
-        val fechaFinalStr = binding.etFechaFinal.text.toString()
+            val fechaInicialStr = binding.etFechaInicial.text.toString()
+            val fechaFinalStr = binding.etFechaFinal.text.toString()
 
-        // Para simplicidad, el filtro de fecha se basa en strings. Idealmente parsear fechas.
-        eventosFiltrados.clear()
-        eventosFiltrados.addAll(eventosTotales.filter { evento ->
-            val cumpleCategoria = evento.categoria.equals(categoriaSeleccionada, ignoreCase = true)
+            // Filtro de eventos
+            val eventosFiltrados = eventos.filter { evento ->
+                val cumpleCategoria = evento.categoria.equals(categoriaSeleccionada, ignoreCase = true)
 
-            val cumpleTexto = textoBusqueda.isEmpty() || (
-                    evento.descripcion.lowercase(Locale.getDefault()).contains(textoBusqueda) ||
-                            evento.contacto.lowercase(Locale.getDefault()).contains(textoBusqueda)
-                    )
+                val cumpleTexto = textoBusqueda.isEmpty() || (
+                        evento.descripcion.lowercase(Locale.getDefault()).contains(textoBusqueda) ||
+                                evento.contacto.lowercase(Locale.getDefault()).contains(textoBusqueda)
+                        )
 
-            val cumpleFecha = when (tabPos) {
-                0 -> { // Por rango
-                    // Considerar evento.fecha entre fechaInicialStr y fechaFinalStr
-                    if (fechaInicialStr.isEmpty() || fechaFinalStr.isEmpty()) true
-                    else evento.fecha >= fechaInicialStr && evento.fecha <= fechaFinalStr
-                }
-                1 -> { // Por año
-                    if (fechaInicialStr.isEmpty()) true
-                    else evento.fecha.startsWith(fechaInicialStr.takeLast(4)) // año en yyyy
-                }
-                2 -> { // Por día
-                    if (fechaInicialStr.isEmpty()) true
-                    else evento.fecha == fechaInicialStr
-                }
-                3 -> { // Por mes
-                    if (fechaInicialStr.isEmpty()) true
-                    else {
-                        val mesAnio = fechaInicialStr.split("/")
-                        if (mesAnio.size == 2) {
-                            val mes = mesAnio[0].padStart(2, '0')
-                            val anio = mesAnio[1]
-                            evento.fecha.startsWith("$anio-$mes")
-                        } else true
+                val cumpleFecha = when (tabPos) {
+                    0 -> { // Por rango
+                        if (fechaInicialStr.isEmpty() || fechaFinalStr.isEmpty()) true
+                        else evento.fecha >= fechaInicialStr && evento.fecha <= fechaFinalStr
                     }
+                    1 -> { // Por año
+                        if (fechaInicialStr.isEmpty()) true
+                        else evento.fecha.startsWith(fechaInicialStr.takeLast(4)) // año en yyyy
+                    }
+                    2 -> { // Por día
+                        if (fechaInicialStr.isEmpty()) true
+                        else evento.fecha == fechaInicialStr
+                    }
+                    3 -> { // Por mes
+                        if (fechaInicialStr.isEmpty()) true
+                        else {
+                            val mesAnio = fechaInicialStr.split("/")
+                            if (mesAnio.size == 2) {
+                                val mes = mesAnio[0].padStart(2, '0')
+                                val anio = mesAnio[1]
+                                evento.fecha.startsWith("$anio-$mes")
+                            } else true
+                        }
+                    }
+                    else -> true
                 }
-                else -> true
+
+                cumpleCategoria && cumpleTexto && cumpleFecha
             }
 
-            cumpleCategoria && cumpleTexto && cumpleFecha
-        })
-
-        adapter.notifyDataSetChanged()
+            // Actualizar el adapter con los eventos filtrados
+            adapter = EventosAdapter(eventosFiltrados)
+            binding.rvEventos.adapter = adapter
+        }
     }
 
     private fun getCategoriaSeleccionada(): String {
         val index = binding.tabCategoriaFiltro.selectedTabPosition
         return binding.tabCategoriaFiltro.getTabAt(index)?.text?.toString() ?: "Cita"
-    }
-
-
-    private fun cargarEventosSimulados() {
-        eventosTotales.clear()
-        eventosTotales.add(
-            Evento(
-                fecha = "2018-05-11",
-                hora = "00:11",
-                categoria = "Cita",
-                status = "pendiente",
-                descripcion = "Cita para comer",
-                contacto = "Alejandro"
-            )
-        )
-        eventosTotales.add(
-            Evento(
-                fecha = "2018-05-12",
-                hora = "14:00",
-                categoria = "Junta",
-                status = "realizado",
-                descripcion = "Reunión importante",
-                contacto = "María"
-            )
-        )
-        eventosTotales.add(
-            Evento(
-                fecha = "2018-05-15",
-                hora = "10:30",
-                categoria = "Examen",
-                status = "aplazado",
-                descripcion = "Examen de matemáticas",
-                contacto = "Carlos"
-            )
-        )
     }
 
     override fun onDestroyView() {

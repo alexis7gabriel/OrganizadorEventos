@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <!-- Título de la pantalla -->
     <TextView
         android:text="Pantalla Inicio: Aquí se mostrarán eventos del día y próximos."
         android:layout_gravity="center"
@@ -13,4 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <!-- RecyclerView para mostrar los eventos -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvEventos"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp" />
 </FrameLayout>
