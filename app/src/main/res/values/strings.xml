@@ -2,4 +2,5 @@
     <string name="app_name">OrganizadorEventos</string>
     <string name="open_drawer">Abrir menú</string>
     <string name="close_drawer">Cerrar menú</string>
+    <string name="google_maps_api_key" translatable="false">AIzaSyBnUO8_HDAfdn_t2IqzcpZdP6usVXP-_Cg</string>
 </resources>
