@@ -52,7 +52,7 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-
+    implementation(libs.androidx.recyclerview)
 
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)

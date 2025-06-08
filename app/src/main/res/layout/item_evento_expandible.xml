@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="6dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Sección Visible (Resumen) -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/collapsed_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <!-- Fecha (Prominente) -->
+            <TextView
+                android:id="@+id/tvFecha"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?attr/textAppearanceSubtitle1"
+                android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
+                tools:text="15/07/2025"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <!-- Categoría (Etiqueta/Badge) -->
+            <TextView
+                android:id="@+id/tvCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                android:layout_marginStart="12dp"
+                tools:text="Cita"
+                app:layout_constraintStart_toEndOf="@id/tvFecha"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvFecha" />
+
+            <!-- Descripción (Principal, debajo de Fecha/Categoría) -->
+            <TextView
+                android:id="@+id/tvDescripcion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="?attr/textAppearanceBody1"
+                android:textColor="?android:attr/textColorPrimary"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Reunión de planificación del proyecto de la aplicación móvil con el equipo de desarrollo."
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvFecha" />
+
+            <!-- Icono de expansión (Flecha hacia abajo/arriba) -->
+            <ImageView
+                android:id="@+id/ivExpandArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_expand_more"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tvDescripcion"
+                app:tint="?android:attr/textColorSecondary"
+                android:contentDescription="Expandir/Contraer detalles del evento" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/expandable_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/collapsed_section"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <!-- Hora -->
+            <TextView
+                android:id="@+id/tvHora"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                app:drawableStartCompat="@drawable/ic_time"
+                tools:text="Hora: 14:30"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider" />
+
+            <!-- Status -->
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_status"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                tools:text="Status: Pendiente"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvHora" />
+
+            <!-- Ubicación y Botón de Mapa -->
+            <TextView
+                android:id="@+id/tvUbicacion"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_location"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                tools:text="Ubicación: Oficina Principal, Sala 301"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnOpenMap"
+                app:layout_constraintTop_toBottomOf="@id/tvStatus" />
+
+            <ImageView
+                android:id="@+id/btnOpenMap"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/ic_map"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="4dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Abrir ubicación en el mapa"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tvUbicacion"
+                app:layout_constraintBottom_toBottomOf="@id/tvUbicacion" />
+
+
+            <!-- Contacto -->
+            <TextView
+                android:id="@+id/tvContacto"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_person"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                tools:text="Contacto: Juan Pérez"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvUbicacion" />
+
+            <!-- Recordatorio -->
+            <TextView
+                android:id="@+id/tvRecordatorio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textAppearance="?attr/textAppearanceCaption"
+                android:textColor="?android:attr/textColorSecondary"
+                android:drawableStart="@drawable/ic_alarm"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                tools:text="Recordatorio: 10 minutos antes"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvContacto" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

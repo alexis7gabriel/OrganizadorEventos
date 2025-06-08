@@ -3,4 +3,9 @@
     <string name="open_drawer">Abrir menú</string>
     <string name="close_drawer">Cerrar menú</string>
     <string name="google_maps_api_key" translatable="false">AIzaSyBnUO8_HDAfdn_t2IqzcpZdP6usVXP-_Cg</string>
+    <string name="event_detail_time">Hora: %s</string>
+    <string name="event_detail_status">Status: %s</string>
+    <string name="event_detail_location">Ubicación: %s</string>
+    <string name="event_detail_contact">Contacto: %s</string>
+    <string name="event_detail_reminder">Recordatorio: %s</string>
 </resources>
