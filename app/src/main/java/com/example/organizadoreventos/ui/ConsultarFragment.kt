@@ -15,8 +15,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.organizadoreventos.R
 import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentConsultarBinding
+import com.example.organizadoreventos.ui.AnadirEventoFragment // Asegúrate de esta importación
 import com.example.organizadoreventos.ui.adapters.EventosAdapter
 import com.example.organizadoreventos.viewmodel.EventoViewModel
 import com.google.android.material.tabs.TabLayout
@@ -50,20 +52,15 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Configuración inicial
         setupTabs()
-        setupRecyclerView() // Mover esto aquí antes de setupBusqueda y setupBotonConsultar para que el adaptador esté listo.
+        setupRecyclerView()
         setupBusqueda()
         setupBotonConsultar()
 
-        // Observar los eventos desde la base de datos
         eventoViewModel.todosLosEventos.observe(viewLifecycleOwner) { eventos ->
-            // Aquí puedes ver todos los eventos en la consola
             eventos.forEach {
                 println("📅 Evento: ${it.fecha} - ${it.descripcion}")
             }
-
-            // Filtrar y actualizar la lista
             aplicarFiltro()
         }
     }
@@ -71,7 +68,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
     private fun setupTabs() {
         binding.tabLayoutConsulta.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab) {
-                // Limpiar fechas al cambiar tab
                 binding.etFechaInicial.setText("")
                 binding.etFechaFinal.setText("")
 
@@ -81,44 +77,40 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
                         binding.etFechaInicial.hint = "Fecha Inicial (dd/MM/yyyy)"
                         binding.etFechaFinal.visibility = View.VISIBLE
                         binding.etFechaFinal.hint = "Fecha Final (dd/MM/yyyy)"
-                        // Asignar DatePicker a ambos EditText
                         binding.etFechaInicial.setOnClickListener { showDatePicker { date -> binding.etFechaInicial.setText(date) } }
                         binding.etFechaFinal.setOnClickListener { showDatePicker { date -> binding.etFechaFinal.setText(date) } }
-                        binding.etFechaInicial.inputType = android.text.InputType.TYPE_NULL // Evita teclado al presionar
-                        binding.etFechaFinal.inputType = android.text.InputType.TYPE_NULL
+                        binding.etFechaInicial.inputType = InputType.TYPE_NULL
+                        binding.etFechaFinal.inputType = InputType.TYPE_NULL
                     }
                     1 -> { // Por año
                         binding.layoutFechas.visibility = View.VISIBLE
                         binding.etFechaInicial.hint = "Año (yyyy)"
                         binding.etFechaFinal.visibility = View.GONE
-                        // Asignar DatePicker, pero formatear para mostrar solo el año
                         binding.etFechaInicial.setOnClickListener {
                             showDatePicker { dateString ->
                                 try {
-                                    val parsedDate = dateFormat.parse(dateString) // Parsear la fecha completa
-                                    val selectedYear = yearFormat.format(parsedDate) // Formatear para obtener solo el año
+                                    val parsedDate = dateFormat.parse(dateString)
+                                    val selectedYear = yearFormat.format(parsedDate)
                                     binding.etFechaInicial.setText(selectedYear)
                                 } catch (e: ParseException) {
                                     Log.e("ConsultarFragment", "Error al parsear fecha para año: ${e.message}")
-                                    binding.etFechaInicial.setText("") // Limpiar si hay error
+                                    binding.etFechaInicial.setText("")
                                 }
                             }
                         }
-                        binding.etFechaInicial.inputType = android.text.InputType.TYPE_NULL // Evita teclado
+                        binding.etFechaInicial.inputType = InputType.TYPE_NULL
                     }
                     2 -> { // Por día
                         binding.layoutFechas.visibility = View.VISIBLE
                         binding.etFechaInicial.hint = "Fecha (dd/MM/yyyy)"
                         binding.etFechaFinal.visibility = View.GONE
-                        // Asignar DatePicker
                         binding.etFechaInicial.setOnClickListener { showDatePicker { date -> binding.etFechaInicial.setText(date) } }
-                        binding.etFechaInicial.inputType = android.text.InputType.TYPE_NULL
+                        binding.etFechaInicial.inputType = InputType.TYPE_NULL
                     }
                     3 -> { // Por mes
                         binding.layoutFechas.visibility = View.VISIBLE
                         binding.etFechaInicial.hint = "Mes (MM/yyyy)"
                         binding.etFechaFinal.visibility = View.GONE
-                        // Asignar DatePicker, pero formatear a MM/yyyy
                         binding.etFechaInicial.setOnClickListener {
                             showDatePicker { date ->
                                 try {
@@ -126,30 +118,26 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
                                     binding.etFechaInicial.setText(monthYearFormat.format(parsedDate))
                                 } catch (e: ParseException) {
                                     Log.e("ConsultarFragment", "Error al parsear fecha para mes/año: ${e.message}")
-                                    binding.etFechaInicial.setText("") // Limpiar si hay error
+                                    binding.etFechaInicial.setText("")
                                 }
                             }
                         }
-                        binding.etFechaInicial.inputType = android.text.InputType.TYPE_NULL
+                        binding.etFechaInicial.inputType = InputType.TYPE_NULL
                     }
                 }
-                aplicarFiltro() // Aplicar filtro para refrescar la lista con la nueva selección de tab
+                aplicarFiltro()
             }
 
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {
-                aplicarFiltro() // Aplicar filtro al volver a seleccionar el mismo tab
+                aplicarFiltro()
             }
         })
-
-        // Inicial: seleccionar primer tab para que la configuración inicial se aplique
         binding.tabLayoutConsulta.getTabAt(0)?.select()
     }
 
     private fun setupDatePickers() {
-        // Los listeners de los DatePickers se asignan/cambian dinámicamente dentro de setupTabs()
-        // para manejar los diferentes tipos de entrada (fecha completa, año, mes).
-        // Por lo tanto, esta función ya no necesita contenido aquí.
+        // Handled in setupTabs()
     }
 
     private fun showDatePicker(onDateSelected: (String) -> Unit) {
@@ -166,7 +154,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
         adapter = EventosAdapter(emptyList())
         binding.rvEventos.layoutManager = LinearLayoutManager(requireContext())
         binding.rvEventos.adapter = adapter
-        // Establecer el listener del adaptador para manejar clics de mapa
         adapter.setOnItemClickListener(this)
     }
 
@@ -175,7 +162,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
             override fun afterTextChanged(s: Editable?) {
                 aplicarFiltro()
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
@@ -223,17 +209,15 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
                                     val startCal = Calendar.getInstance().apply { time = startDate }
                                     val endCal = Calendar.getInstance().apply { time = endDate }
 
-                                    // Para comparación de fechas, ignorar la hora del día, solo comparar días
                                     startCal.set(Calendar.HOUR_OF_DAY, 0); startCal.set(Calendar.MINUTE, 0); startCal.set(Calendar.SECOND, 0); startCal.set(Calendar.MILLISECOND, 0)
                                     endCal.set(Calendar.HOUR_OF_DAY, 23); endCal.set(Calendar.MINUTE, 59); endCal.set(Calendar.SECOND, 59); endCal.set(Calendar.MILLISECOND, 999)
                                     eventCalendar.set(Calendar.HOUR_OF_DAY, 0); eventCalendar.set(Calendar.MINUTE, 0); eventCalendar.set(Calendar.SECOND, 0); eventCalendar.set(Calendar.MILLISECOND, 0)
-
 
                                     cumpleFecha = !eventCalendar.before(startCal) && !eventCalendar.after(endCal)
                                 }
                             }
                             1 -> { // Por año
-                                val yearToFilter = fechaInicialStr // Esperamos que sea solo el año (ej. "2023")
+                                val yearToFilter = fechaInicialStr
                                 val eventYear = yearFormat.format(eventDate)
                                 cumpleFecha = eventYear == yearToFilter
                             }
@@ -241,7 +225,7 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
                                 cumpleFecha = evento.fecha == fechaInicialStr
                             }
                             3 -> { // Por mes
-                                val monthYearToFilter = fechaInicialStr // Esperamos MM/yyyy
+                                val monthYearToFilter = fechaInicialStr
                                 val eventMonthYear = monthYearFormat.format(eventDate)
                                 cumpleFecha = eventMonthYear == monthYearToFilter
                             }
@@ -257,10 +241,8 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
 
                 cumpleCategoria && cumpleTexto && cumpleFecha
             }.sortedWith(compareBy<Evento> {
-                // Ordenar por fecha
                 try { dateFormat.parse(it.fecha) } catch (e: ParseException) { Date(0) }
             }.thenBy {
-                // Luego por hora
                 try { SimpleDateFormat("HH:mm", Locale.getDefault()).parse(it.hora) } catch (e: ParseException) { Date(0) }
             })
 
@@ -278,9 +260,8 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
 
 
     private fun getCategoriaSeleccionada(): String {
-        // Obtiene el texto de la pestaña seleccionada del TabLayout
         val selectedTab = binding.tabCategoriaFiltro.getTabAt(binding.tabCategoriaFiltro.selectedTabPosition)
-        return selectedTab?.text?.toString() ?: "Todos" // "Todos" como valor por defecto si no hay selección
+        return selectedTab?.text?.toString() ?: "Todos"
     }
 
 
@@ -291,25 +272,18 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
 
     // --- Implementación de la interfaz OnItemClickListener ---
     override fun onItemClick(evento: Evento) {
-        // La lógica de expansión/contracción ya la maneja el adaptador.
-        // Aquí puedes añadir alguna otra acción si es necesaria al hacer clic en el ítem.
         Log.d("ConsultarFragment", "Evento clickeado en Consultar: ${evento.descripcion}")
     }
 
     override fun onMapButtonClick(ubicacion: String) {
         Log.d("ConsultarFragment", "Clic en mapa para ubicación: $ubicacion")
-
-        // Crea un URI geográfico para la ubicación. Uri.encode() asegura que la cadena sea URL-safe.
         val gmmIntentUri = Uri.parse("geo:0,0?q=${Uri.encode(ubicacion)}")
         val mapIntent = Intent(Intent.ACTION_VIEW, gmmIntentUri)
-        // Opcional: Especifica que se intente abrir Google Maps. Si no está instalado, buscará otras apps.
         mapIntent.setPackage("com.google.android.apps.maps")
 
-        // Verifica si hay alguna aplicación que pueda manejar esta intención
         if (mapIntent.resolveActivity(requireContext().packageManager) != null) {
             startActivity(mapIntent)
         } else {
-            // Si no se encuentra una aplicación de mapas compatible, muestra un Toast
             Toast.makeText(
                 requireContext(),
                 "No se encontró una aplicación de mapas para mostrar la ubicación.",
@@ -317,5 +291,33 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
             ).show()
             Log.e("ConsultarFragment", "No hay aplicación de mapas disponible para la Intent: $gmmIntentUri")
         }
+    }
+
+    // <--- ¡NUEVO!: Implementación del clic en el botón de edición
+    override fun onEditButtonClick(evento: Evento) {
+        Log.d("ConsultarFragment", "Clic en editar evento: ${evento.descripcion} (ID: ${evento.idEvento})")
+
+        // Crear un Bundle para pasar los datos del evento al fragmento de edición
+        val bundle = Bundle().apply {
+            putInt("eventId", evento.idEvento)
+            putString("fecha", evento.fecha)
+            putString("hora", evento.hora)
+            putString("categoria", evento.categoria)
+            putString("status", evento.status)
+            putString("descripcion", evento.descripcion)
+            putString("contacto", evento.contacto)
+            putString("ubicacion", evento.ubicacion)
+            putString("recordatorio", evento.recordatorio)
+        }
+
+        // Navegar a AnadirEventoFragment con los argumentos para editar
+        val anadirEventoFragment = AnadirEventoFragment().apply {
+            arguments = bundle
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, anadirEventoFragment)
+            .addToBackStack(null) // Permite al usuario regresar al fragmento anterior
+            .commit()
     }
 }

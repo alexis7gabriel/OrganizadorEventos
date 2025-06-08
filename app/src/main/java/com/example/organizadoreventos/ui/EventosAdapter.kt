@@ -15,8 +15,9 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
 
     // Interfaz para comunicar eventos de clics al Fragmento/Activity que usa el adaptador
     interface OnItemClickListener {
-        fun onItemClick(evento: Evento) // Clic en el ítem completo
+        fun onItemClick(evento: Evento) // Clic en el ítem completo (para expansión/contracción)
         fun onMapButtonClick(ubicacion: String) // Clic en el botón del mapa
+        fun onEditButtonClick(evento: Evento) // <--- ¡NUEVO!: Clic en el botón de edición
     }
 
     private var listener: OnItemClickListener? = null
@@ -55,7 +56,6 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
             binding.collapsedSection.setOnClickListener {
                 isExpanded = !isExpanded // Cambia el estado de expansión
                 toggleExpandedState() // Actualiza la visibilidad de la sección y el icono
-                // Usar absoluteAdapterPosition para obtener la posición de forma más robusta
                 listener?.onItemClick(eventos[absoluteAdapterPosition]) // Notifica al fragmento del clic en el ítem
             }
 
@@ -63,8 +63,15 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
             binding.btnOpenMap.setOnClickListener {
                 // Obtiene la ubicación del TextView y la limpia de "Ubicación: "
                 val ubicacionText = binding.tvUbicacion.text.toString()
-                val ubicacionValue = ubicacionText.replace("Ubicación: ", "")
+                val locationPrefix = itemView.context.getString(R.string.event_detail_location, "")
+                    .replace("%s", "").trim()
+                val ubicacionValue = ubicacionText.replace(locationPrefix, "").trim()
                 listener?.onMapButtonClick(ubicacionValue) // Notifica al fragmento del clic en el mapa
+            }
+
+            // <--- ¡NUEVO!: Configura el listener para el clic en el botón de edición
+            binding.btnEditEvent.setOnClickListener {
+                listener?.onEditButtonClick(eventos[absoluteAdapterPosition]) // Notifica al fragmento el clic en el botón de edición
             }
         }
 
@@ -81,17 +88,6 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
             binding.tvContacto.text = itemView.context.getString(R.string.event_detail_contact, evento.contacto)
             binding.tvRecordatorio.text = itemView.context.getString(R.string.event_detail_reminder, evento.recordatorio)
 
-            // Asignar color de fondo a la categoría (usando el drawable genérico)
-            //binding.tvCategoria.setBackgroundResource(R.drawable.rounded_category_background)
-
-            // Cambiar el color de fondo del Status según el valor
-         /*   when (evento.status.toLowerCase(Locale.getDefault())) {
-                "pendiente" -> binding.tvStatus.setBackgroundResource(R.drawable.rounded_status_pending_background)
-                "realizado" -> binding.tvStatus.setBackgroundResource(R.drawable.rounded_status_completed_background)
-                "aplazado" -> binding.tvStatus.setBackgroundResource(R.drawable.rounded_status_postponed_background)
-                else -> binding.tvStatus.setBackgroundResource(R.drawable.rounded_status_default_background)
-            }*/
-
             // Asegura que la sección expandible y la flecha estén en el estado inicial correcto
             toggleExpandedState()
         }
@@ -100,6 +96,15 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
         private fun toggleExpandedState() {
             binding.expandableSection.visibility = if (isExpanded) View.VISIBLE else View.GONE
             binding.ivExpandArrow.setImageResource(if (isExpanded) R.drawable.ic_expand_less else R.drawable.ic_expand_more)
+
+            // Controla las líneas de la descripción para la expansión
+            if (isExpanded) {
+                binding.tvDescripcion.maxLines = Integer.MAX_VALUE // Muestra todas las líneas
+                binding.tvDescripcion.ellipsize = null // Elimina elipsis
+            } else {
+                binding.tvDescripcion.maxLines = 2 // Limita a 2 líneas
+                binding.tvDescripcion.ellipsize = android.text.TextUtils.TruncateAt.END // Añade elipsis
+            }
         }
     }
 }

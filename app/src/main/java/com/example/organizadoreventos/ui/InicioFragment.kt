@@ -13,23 +13,25 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.organizadoreventos.R
 import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentInicioBinding
+import com.example.organizadoreventos.ui.AnadirEventoFragment // Asegúrate de esta importación
 import com.example.organizadoreventos.ui.adapters.EventosAdapter
 import com.example.organizadoreventos.viewmodel.EventoViewModel
-import java.time.LocalDate // Importa LocalDate para manejo moderno de fechas
-import java.time.format.DateTimeFormatter // Importa DateTimeFormatter
-import java.time.format.DateTimeParseException // Importa para manejo de errores de parseo
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Locale
+import java.time.LocalTime
 
-// InicioFragment ahora implementa la interfaz OnItemClickListener de EventosAdapter
+
 class InicioFragment : Fragment(), EventosAdapter.OnItemClickListener {
 
     private val eventoViewModel: EventoViewModel by viewModels()
     private lateinit var binding: FragmentInicioBinding
     private lateinit var eventosAdapter: EventosAdapter
 
-    // Formato de fecha para parsear y formatear (debe coincidir con el formato de tu Evento.fecha)
     @RequiresApi(Build.VERSION_CODES.O)
     private val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.getDefault())
 
@@ -80,14 +82,14 @@ class InicioFragment : Fragment(), EventosAdapter.OnItemClickListener {
                     val date = LocalDate.parse(evento.fecha, dateFormatter)
                     val time = try {
                         val timeFormat = DateTimeFormatter.ofPattern("HH:mm", Locale.getDefault())
-                        java.time.LocalTime.parse(evento.hora, timeFormat)
+                        LocalTime.parse(evento.hora, timeFormat)
                     } catch (e: Exception) {
-                        java.time.LocalTime.MIN
+                        LocalTime.MIN
                     }
-                    // Convertir a epoch day y nano of day para comparación
+                    // Convertir a epoch day y nano of day para una comparación única de fecha y hora
                     date.toEpochDay() * 86400_000_000_000L + time.toNanoOfDay()
                 } catch (e: Exception) {
-                    Long.MIN_VALUE
+                    Long.MIN_VALUE // Usar un valor mínimo para ordenar eventos con fecha/hora inválida al principio
                 }
             }
 
@@ -139,5 +141,33 @@ class InicioFragment : Fragment(), EventosAdapter.OnItemClickListener {
             ).show()
             Log.e("InicioFragment", "No hay aplicación de mapas disponible para la Intent: $gmmIntentUri")
         }
+    }
+
+    // <--- ¡NUEVO!: Implementación del clic en el botón de edición
+    override fun onEditButtonClick(evento: Evento) {
+        Log.d("InicioFragment", "Clic en editar evento: ${evento.descripcion} (ID: ${evento.idEvento})")
+
+        // Crear un Bundle para pasar los datos del evento al fragmento de edición
+        val bundle = Bundle().apply {
+            putInt("eventId", evento.idEvento)
+            putString("fecha", evento.fecha)
+            putString("hora", evento.hora)
+            putString("categoria", evento.categoria)
+            putString("status", evento.status)
+            putString("descripcion", evento.descripcion)
+            putString("contacto", evento.contacto)
+            putString("ubicacion", evento.ubicacion)
+            putString("recordatorio", evento.recordatorio)
+        }
+
+        // Navegar a AnadirEventoFragment con los argumentos para editar
+        val anadirEventoFragment = AnadirEventoFragment().apply {
+            arguments = bundle
+        }
+
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, anadirEventoFragment)
+            .addToBackStack(null) // Permite al usuario regresar al fragmento anterior
+            .commit()
     }
 }

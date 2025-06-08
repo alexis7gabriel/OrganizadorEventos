@@ -13,4 +13,12 @@ class EventoRepository(private val eventoDao: EventoDao) {
     fun obtenerTodosLosEventos(): Flow<List<Evento>> {
         return eventoDao.obtenerTodosLosEventos()
     }
+
+    suspend fun actualizar(evento: Evento) {
+        eventoDao.actualizarEvento(evento)
+    }
+
+    suspend fun eliminar(evento: Evento) {
+        eventoDao.eliminarEvento(evento)
+    }
 }

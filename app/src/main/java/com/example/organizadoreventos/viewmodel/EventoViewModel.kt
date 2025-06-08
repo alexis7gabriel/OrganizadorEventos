@@ -8,18 +8,27 @@ import androidx.lifecycle.asLiveData
 import com.example.organizadoreventos.data.AppDatabase
 import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.data.repository.EventoRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class EventoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
-    private val repo = EventoRepository(db.eventoDao())
+    private val repository = EventoRepository(db.eventoDao())
 
-    val todosLosEventos: LiveData<List<Evento>> = repo.obtenerTodosLosEventos().asLiveData()
+    val todosLosEventos: LiveData<List<Evento>> = repository.obtenerTodosLosEventos().asLiveData()
 
     fun insertarEvento(evento: Evento) {
         viewModelScope.launch {
-            repo.insertarEvento(evento)
+            repository.insertarEvento(evento)
         }
+    }
+
+    fun actualizarEvento(evento: Evento) = viewModelScope.launch(Dispatchers.IO) {
+        repository.actualizar(evento)
+    }
+
+    fun eliminarEvento(evento: Evento) = viewModelScope.launch(Dispatchers.IO) {
+        repository.eliminar(evento)
     }
 }

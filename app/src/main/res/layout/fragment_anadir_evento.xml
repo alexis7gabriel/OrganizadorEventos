@@ -13,6 +13,16 @@
 
         <!-- Categorías con TabLayout -->
         <TextView
+            android:id="@+id/tvScreenTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Añadir Nuevo Evento"
+            android:textAppearance="?attr/textAppearanceHeadline5"
+            android:textStyle="bold"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
             android:text="Categoría:"
             android:textSize="16sp"
             android:layout_marginTop="8dp"
@@ -141,12 +151,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <!-- Botón Guardar -->
         <Button
-            android:id="@+id/btn_guardar"
+            android:id="@+id/btnEliminar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Guardar"
-            android:layout_marginTop="24dp" />
+            android:text="Eliminar Evento"
+            android:backgroundTint="@color/design_default_color_error"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Evento"
+            android:layout_marginTop="8dp"/>
     </LinearLayout>
 </ScrollView>
