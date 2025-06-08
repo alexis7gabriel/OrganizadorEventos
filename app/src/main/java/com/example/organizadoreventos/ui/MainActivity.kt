@@ -8,7 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.example.organizadoreventos.R
 import com.example.organizadoreventos.ui.AcercaDeFragment
 import com.example.organizadoreventos.ui.AnadirEventoFragment
-import com.example.organizadoreventos.ui.ConsultarFragment
+import com.example.organizadoreventos.ui.fragmentos.ConsultarFragment
 import com.example.organizadoreventos.ui.fragmentos.InicioFragment // Asegúrate de que esta ruta sea correcta
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView

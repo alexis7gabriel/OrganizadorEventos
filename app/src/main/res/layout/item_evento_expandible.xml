@@ -47,13 +47,30 @@
                 android:paddingEnd="10dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:textSize="12sp"
+                android:textSize="15sp"
                 android:textColor="@android:color/white"
                 android:textStyle="bold"
                 android:layout_marginStart="12dp"
                 tools:text="Cita"
                 app:layout_constraintStart_toEndOf="@id/tvFecha"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvFecha" />
+
+            <!-- Icono de Edición (MOVido aquí, junto a la categoría) -->
+            <ImageView
+                android:id="@+id/btnEditEvent"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_edit"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="2dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="Editar evento"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@id/tvCategoria"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvCategoria"
+                app:tint="?android:attr/textColorSecondary" />
+
 
             <!-- Descripción (Principal, debajo de Fecha/Categoría) -->
             <TextView
@@ -63,27 +80,28 @@
                 android:layout_marginTop="8dp"
                 android:textAppearance="?attr/textAppearanceBody1"
                 android:textColor="?android:attr/textColorPrimary"
-                android:maxLines="2"
-                android:ellipsize="end"
-                tools:text="Reunión de planificación del proyecto de la aplicación móvil con el equipo de desarrollo."
+                tools:text="Reunión de planificación del proyecto de la aplicación móvil con el equipo de desarrollo. Esta es una descripción más larga para probar la expansión del texto y asegurar que se vea completamente al hacer clic."
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvFecha" />
+            <!-- maxLines y ellipsize se manejarán en el adaptador para la expansión -->
 
             <!-- Icono de expansión (Flecha hacia abajo/arriba) -->
             <ImageView
                 android:id="@+id/ivExpandArrow"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:contentDescription="Expandir/Contraer detalles del evento"
                 android:src="@drawable/ic_expand_more"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="@id/tvDescripcion"
-                app:tint="?android:attr/textColorSecondary"
-                android:contentDescription="Expandir/Contraer detalles del evento" />
+                app:layout_constraintVertical_bias="0.0"
+                app:tint="?android:attr/textColorSecondary" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <!-- Sección Expandible (Detalles Adicionales) -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/expandable_section"
             android:layout_width="match_parent"
@@ -152,6 +170,7 @@
                 app:layout_constraintEnd_toStartOf="@id/btnOpenMap"
                 app:layout_constraintTop_toBottomOf="@id/tvStatus" />
 
+            <!-- Icono de Mapa (Sigue aquí) -->
             <ImageView
                 android:id="@+id/btnOpenMap"
                 android:layout_width="32dp"
@@ -164,7 +183,7 @@
                 android:contentDescription="Abrir ubicación en el mapa"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@id/tvUbicacion"
-                app:layout_constraintBottom_toBottomOf="@id/tvUbicacion" />
+                app:layout_constraintBottom_toBottomOf="@id/tvUbicacion"/>
 
 
             <!-- Contacto -->
