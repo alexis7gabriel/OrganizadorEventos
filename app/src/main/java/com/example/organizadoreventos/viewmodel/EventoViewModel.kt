@@ -31,4 +31,12 @@ class EventoViewModel(application: Application) : AndroidViewModel(application) 
     fun eliminarEvento(evento: Evento) = viewModelScope.launch(Dispatchers.IO) {
         repository.eliminar(evento)
     }
+
+    fun eliminarTodosLosEventos() = viewModelScope.launch(Dispatchers.IO) {
+        repository.eliminarTodos()
+    }
+
+    fun insertarTodosLosEventos(eventos: List<Evento>) = viewModelScope.launch(Dispatchers.IO) {
+        repository.insertarTodos(eventos)
+    }
 }

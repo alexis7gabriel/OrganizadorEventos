@@ -21,4 +21,11 @@ class EventoRepository(private val eventoDao: EventoDao) {
     suspend fun eliminar(evento: Evento) {
         eventoDao.eliminarEvento(evento)
     }
-}
+
+    suspend fun eliminarTodos() {
+        eventoDao.eliminarTodosLosEventos()
+    }
+
+    suspend fun insertarTodos(eventos: List<Evento>) {
+        eventoDao.insertarTodosLosEventos(eventos)
+    }}

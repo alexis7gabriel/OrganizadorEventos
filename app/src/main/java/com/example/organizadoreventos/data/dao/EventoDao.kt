@@ -3,6 +3,7 @@ package com.example.organizadoreventos.data.dao
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.organizadoreventos.data.entities.Evento
@@ -22,4 +23,10 @@ interface EventoDao {
 
     @Delete
     suspend fun eliminarEvento(evento: Evento)
+
+    @Query("DELETE FROM eventos")
+    suspend fun eliminarTodosLosEventos()
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertarTodosLosEventos(eventos: List<Evento>)
 }

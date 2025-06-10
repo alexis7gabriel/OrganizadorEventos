@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1008311015113",
+    "project_id": "organizadoreventos-4aa03",
+    "storage_bucket": "organizadoreventos-4aa03.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008311015113:android:26ff4a909d387ceb45df18",
+        "android_client_info": {
+          "package_name": "com.example.organizadoreventos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzUaYaZKlwptpuq7zWCvjxc-LV9dzWdRA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
