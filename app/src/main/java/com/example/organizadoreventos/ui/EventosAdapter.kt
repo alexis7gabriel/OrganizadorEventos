@@ -1,23 +1,20 @@
 package com.example.organizadoreventos.ui.adapters
 
-import android.content.Context
-import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizadoreventos.R
 import com.example.organizadoreventos.data.entities.Evento
-import com.example.organizadoreventos.databinding.ItemEventoExpandibleBinding // Asegúrate de que este binding sea el correcto
-import java.util.Locale
+import com.example.organizadoreventos.databinding.ItemEventoExpandibleBinding
 
 class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<EventosAdapter.EventoViewHolder>() {
 
     // Interfaz para comunicar eventos de clics al Fragmento/Activity que usa el adaptador
     interface OnItemClickListener {
-        fun onItemClick(evento: Evento) // Clic en el ítem completo (para expansión/contracción)
-        fun onMapButtonClick(ubicacion: String) // Clic en el botón del mapa
-        fun onEditButtonClick(evento: Evento) // <--- ¡NUEVO!: Clic en el botón de edición
+        fun onItemClick(evento: Evento)
+        fun onMapButtonClick(ubicacion: String)
+        fun onEditButtonClick(evento: Evento)
     }
 
     private var listener: OnItemClickListener? = null
@@ -34,7 +31,6 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventoViewHolder {
-        // Infla el layout del ítem usando View Binding
         val binding = ItemEventoExpandibleBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EventoViewHolder(binding)
     }
@@ -47,12 +43,9 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
     override fun getItemCount(): Int = eventos.size
 
     inner class EventoViewHolder(private val binding: ItemEventoExpandibleBinding) : RecyclerView.ViewHolder(binding.root) {
-        // Estado local para cada ítem: si está expandido o no
         private var isExpanded = false
 
         init {
-            // Configura el listener para el clic en todo el CardView (collapsed_section)
-            // Esto permite expandir/contraer al tocar el área principal del ítem
             binding.collapsedSection.setOnClickListener {
                 isExpanded = !isExpanded // Cambia el estado de expansión
                 toggleExpandedState() // Actualiza la visibilidad de la sección y el icono
@@ -69,26 +62,22 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
                 listener?.onMapButtonClick(ubicacionValue) // Notifica al fragmento del clic en el mapa
             }
 
-            // <--- ¡NUEVO!: Configura el listener para el clic en el botón de edición
             binding.btnEditEvent.setOnClickListener {
                 listener?.onEditButtonClick(eventos[absoluteAdapterPosition]) // Notifica al fragmento el clic en el botón de edición
             }
         }
 
         fun bind(evento: Evento) {
-            // Sección Visible (Resumen)
             binding.tvFecha.text = evento.fecha
             binding.tvCategoria.text = evento.categoria
             binding.tvDescripcion.text = evento.descripcion
 
-            // Sección Expandible (Detalles Adicionales)
             binding.tvHora.text = itemView.context.getString(R.string.event_detail_time, evento.hora)
             binding.tvStatus.text = itemView.context.getString(R.string.event_detail_status, evento.status)
             binding.tvUbicacion.text = itemView.context.getString(R.string.event_detail_location, evento.ubicacion)
             binding.tvContacto.text = itemView.context.getString(R.string.event_detail_contact, evento.contacto)
             binding.tvRecordatorio.text = itemView.context.getString(R.string.event_detail_reminder, evento.recordatorio)
 
-            // Asegura que la sección expandible y la flecha estén en el estado inicial correcto
             toggleExpandedState()
         }
 
@@ -99,11 +88,11 @@ class EventosAdapter(private var eventos: List<Evento>) : RecyclerView.Adapter<E
 
             // Controla las líneas de la descripción para la expansión
             if (isExpanded) {
-                binding.tvDescripcion.maxLines = Integer.MAX_VALUE // Muestra todas las líneas
-                binding.tvDescripcion.ellipsize = null // Elimina elipsis
+                binding.tvDescripcion.maxLines = Integer.MAX_VALUE
+                binding.tvDescripcion.ellipsize = null
             } else {
-                binding.tvDescripcion.maxLines = 2 // Limita a 2 líneas
-                binding.tvDescripcion.ellipsize = android.text.TextUtils.TruncateAt.END // Añade elipsis
+                binding.tvDescripcion.maxLines = 2
+                binding.tvDescripcion.ellipsize = android.text.TextUtils.TruncateAt.END
             }
         }
     }

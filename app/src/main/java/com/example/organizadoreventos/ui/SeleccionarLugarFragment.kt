@@ -34,8 +34,8 @@ class SeleccionarLugarFragment : Fragment(), OnMapReadyCallback {
     companion object {
         const val REQUEST_KEY = "request_key_location_selection"
         const val BUNDLE_KEY_ADDRESS = "bundle_key_address"
-        const val BUNDLE_KEY_LAT = "bundle_key_lat" // Si necesitas latitud
-        const val BUNDLE_KEY_LNG = "bundle_key_lng" // Si necesitas longitud
+        const val BUNDLE_KEY_LAT = "bundle_key_lat"
+        const val BUNDLE_KEY_LNG = "bundle_key_lng"
     }
 
     override fun onCreateView(
@@ -59,9 +59,6 @@ class SeleccionarLugarFragment : Fragment(), OnMapReadyCallback {
                 setFragmentResult(
                     REQUEST_KEY,
                     bundleOf(BUNDLE_KEY_ADDRESS to selectedAddress)
-                    // Puedes añadir Lat/Lng si los necesitas:
-                    // BUNDLE_KEY_LAT to selectedLatLng?.latitude,
-                    // BUNDLE_KEY_LNG to selectedLatLng?.longitude
                 )
                 // Volver al fragmento anterior (AnadirEventoFragment)
                 requireActivity().supportFragmentManager.popBackStack()
@@ -74,45 +71,34 @@ class SeleccionarLugarFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(map: GoogleMap) {
         googleMap = map
 
-        // Mueve la cámara a una ubicación predeterminada (ej. Ciudad de México)
         val mexicoCity = LatLng(19.4326, -99.1332)
         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mexicoCity, 10f))
 
-        // Habilita controles de zoom y gestos
         googleMap.uiSettings.isZoomControlsEnabled = true
-        googleMap.uiSettings.isMapToolbarEnabled = true // Para mostrar botones de Maps
+        googleMap.uiSettings.isMapToolbarEnabled = true
 
-        // Listener para la pulsación larga en el mapa (seleccionar pin)
         googleMap.setOnMapLongClickListener { latLng ->
-            googleMap.clear() // Limpia marcadores anteriores
+            googleMap.clear()
             googleMap.addMarker(MarkerOptions().position(latLng).title("Ubicación seleccionada"))
             selectedLatLng = latLng
-            getAddressFromLatLng(latLng) // Obtiene la dirección del LatLng
+            getAddressFromLatLng(latLng)
 
-            // Mueve la cámara al pin seleccionado si está fuera de la vista
             googleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng))
         }
 
-        // Listener para cuando se hace clic en el mapa (si quieres limpiar la selección)
         googleMap.setOnMapClickListener {
-            // googleMap.clear() // Opcional: limpia el marcador si el usuario solo hace clic
-            // binding.tvSelectedAddress.visibility = View.GONE
-            // selectedLatLng = null
-            // selectedAddress = null
         }
     }
 
-    // Función para obtener la dirección a partir de LatLng (Geocodificación Inversa)
     private fun getAddressFromLatLng(latLng: LatLng) {
-        if (context == null) return // Evitar NPE si el fragmento se desvincula
+        if (context == null) return
 
-        // Usar Geocoder del framework de Android
         val geocoder = Geocoder(requireContext(), Locale.getDefault())
         try {
             val addresses: List<Address>? = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
             if (!addresses.isNullOrEmpty()) {
                 val address = addresses[0]
-                val fullAddress = address.getAddressLine(0) // La primera línea de dirección (ej. "Calle, Número, Ciudad")
+                val fullAddress = address.getAddressLine(0)
                 selectedAddress = fullAddress
                 binding.tvSelectedAddress.text = fullAddress
                 binding.tvSelectedAddress.visibility = View.VISIBLE

@@ -1,12 +1,9 @@
 package com.example.organizadoreventos.ui
 
 import android.Manifest
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.util.Log
@@ -15,7 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog // Importar AlertDialog de AndroidX
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -24,11 +21,7 @@ import com.example.organizadoreventos.R
 import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentAnadirEventoBinding
 import com.example.organizadoreventos.viewmodel.EventoViewModel
-import com.google.android.material.tabs.TabLayout
 import com.google.android.libraries.places.api.Places
-import com.google.android.libraries.places.api.model.Place
-import com.google.android.libraries.places.widget.Autocomplete
-import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
@@ -84,7 +77,6 @@ class AnadirEventoFragment : Fragment() {
             openMapForSelection()
         }
 
-        // --- Lógica para determinar si estamos en modo edición ---
         arguments?.let { bundle ->
             eventIdToEdit = bundle.getInt("eventId", -1).takeIf { it != -1 }
             if (eventIdToEdit != null) {
@@ -103,7 +95,6 @@ class AnadirEventoFragment : Fragment() {
             binding.btnGuardar.text = "Guardar Evento"
             binding.btnEliminar.visibility = View.GONE
         }
-        // --- FIN Lógica de Edición ---
 
         binding.btnGuardar.setOnClickListener {
             if (eventIdToEdit != null) {
@@ -113,18 +104,16 @@ class AnadirEventoFragment : Fragment() {
             }
         }
 
-        // --- ¡NUEVO!: Listener para el botón de eliminar ---
         binding.btnEliminar.setOnClickListener {
             mostrarDialogoConfirmacionEliminar()
         }
-        // --- FIN NUEVO LISTENER ---
     }
 
     private fun loadEventDataForEdit(bundle: Bundle) {
         // Almacenar el evento completo para facilitar la eliminación si es necesario
         currentEvento = Evento(
             idEvento = bundle.getInt("eventId"),
-            idUsuario = 1, // Asumiendo un idUsuario fijo o manejándolo de forma externa
+            idUsuario = 1,
             fecha = bundle.getString("fecha") ?: "",
             hora = bundle.getString("hora") ?: "",
             categoria = bundle.getString("categoria") ?: "",
@@ -280,7 +269,7 @@ class AnadirEventoFragment : Fragment() {
         }
 
         val evento = Evento(
-            idUsuario = 1, // Puedes manejar esto de forma más dinámica si tienes usuarios reales
+            idUsuario = 1,
             fecha = fecha,
             hora = hora,
             categoria = categoria,
@@ -317,8 +306,8 @@ class AnadirEventoFragment : Fragment() {
         }
 
         val eventoActualizado = Evento(
-            idEvento = id, // Asegúrate de usar el ID existente
-            idUsuario = 1, // Mantén el mismo ID de usuario
+            idEvento = id,
+            idUsuario = 1,
             fecha = fecha,
             hora = hora,
             categoria = categoria,
@@ -338,7 +327,6 @@ class AnadirEventoFragment : Fragment() {
         requireActivity().supportFragmentManager.popBackStack()
     }
 
-    // --- ¡NUEVO!: Diálogo de confirmación para eliminar ---
     private fun mostrarDialogoConfirmacionEliminar() {
         AlertDialog.Builder(requireContext())
             .setTitle("Confirmar Eliminación")
@@ -361,8 +349,6 @@ class AnadirEventoFragment : Fragment() {
             .create()
             .show()
     }
-    // --- FIN NUEVO DIÁLOGO ---
-
 
     private fun logEventData(evento: Evento) {
         Log.d("Evento", "--- Datos del Evento ---")
@@ -386,11 +372,11 @@ class AnadirEventoFragment : Fragment() {
         binding.spinnerContacto.setSelection(0)
         binding.spinnerRecordatorio.setSelection(0)
         binding.tabCategoria.getTabAt(0)?.select()
-        eventIdToEdit = null // Importante: resetear el ID de edición
-        currentEvento = null // Limpiar el evento actual
-        binding.btnGuardar.text = "Guardar Evento" // Restablecer texto del botón
-        binding.tvScreenTitle.text = "Añadir Nuevo Evento" // Restablecer título
-        binding.btnEliminar.visibility = View.GONE // Ocultar botón de eliminar
+        eventIdToEdit = null
+        currentEvento = null
+        binding.btnGuardar.text = "Guardar Evento"
+        binding.tvScreenTitle.text = "Añadir Nuevo Evento"
+        binding.btnEliminar.visibility = View.GONE
     }
 
     override fun onRequestPermissionsResult(

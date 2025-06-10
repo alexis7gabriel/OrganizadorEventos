@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.organizadoreventos.R
 import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentConsultarBinding
-import com.example.organizadoreventos.ui.AnadirEventoFragment // Asegúrate de esta importación
+import com.example.organizadoreventos.ui.AnadirEventoFragment
 import com.example.organizadoreventos.ui.adapters.EventosAdapter
 import com.example.organizadoreventos.viewmodel.EventoViewModel
 import com.google.android.material.tabs.TabLayout
@@ -26,13 +26,12 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
-// ConsultarFragment ahora implementa la interfaz OnItemClickListener de EventosAdapter
 class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
 
     private var _binding: FragmentConsultarBinding? = null
     private val binding get() = _binding!!
 
-    // Formato de fecha para parsear y formatear (debe coincidir con el formato de tu Evento.fecha)
+    // Formato de fecha para parsear y formatear
     private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
     // Formato solo para año
     private val yearFormat = SimpleDateFormat("yyyy", Locale.getDefault())
@@ -41,7 +40,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
 
     private lateinit var adapter: EventosAdapter
 
-    // ViewModel para acceder a los datos
     private val eventoViewModel: EventoViewModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -134,10 +132,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
             }
         })
         binding.tabLayoutConsulta.getTabAt(0)?.select()
-    }
-
-    private fun setupDatePickers() {
-        // Handled in setupTabs()
     }
 
     private fun showDatePicker(onDateSelected: (String) -> Unit) {
@@ -270,7 +264,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
         _binding = null
     }
 
-    // --- Implementación de la interfaz OnItemClickListener ---
     override fun onItemClick(evento: Evento) {
         Log.d("ConsultarFragment", "Evento clickeado en Consultar: ${evento.descripcion}")
     }
@@ -293,7 +286,6 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
         }
     }
 
-    // <--- ¡NUEVO!: Implementación del clic en el botón de edición
     override fun onEditButtonClick(evento: Evento) {
         Log.d("ConsultarFragment", "Clic en editar evento: ${evento.descripcion} (ID: ${evento.idEvento})")
 
@@ -310,14 +302,13 @@ class ConsultarFragment : Fragment(), EventosAdapter.OnItemClickListener {
             putString("recordatorio", evento.recordatorio)
         }
 
-        // Navegar a AnadirEventoFragment con los argumentos para editar
         val anadirEventoFragment = AnadirEventoFragment().apply {
             arguments = bundle
         }
 
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, anadirEventoFragment)
-            .addToBackStack(null) // Permite al usuario regresar al fragmento anterior
+            .addToBackStack(null)
             .commit()
     }
 }
