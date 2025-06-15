@@ -1,7 +1,12 @@
 package com.example.organizadoreventos.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
@@ -23,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var navigationView: NavigationView
     private lateinit var bottomNav: BottomNavigationView
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -47,7 +53,7 @@ class MainActivity : AppCompatActivity() {
                 .replace(R.id.fragment_container, InicioFragment(), InicioFragment::class.java.simpleName)
                 .commit()
         }
-
+        crearCanalNotificacion()
         // Menú de navegación lateral (Drawer)
         navigationView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -124,4 +130,20 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
         }
     }
+
+    private fun crearCanalNotificacion() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val nombre = "Canal de Recordatorios"
+            val descripcion = "Canal para notificaciones de eventos y recordatorios"
+            val importancia = NotificationManager.IMPORTANCE_HIGH
+            val canal = NotificationChannel("canal_recordatorios", nombre, importancia)
+            canal.description = descripcion
+
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(canal)
+
+            Log.d("MainActivity", "Canal de notificación creado o ya existe")
+        }
+    }
+
 }
