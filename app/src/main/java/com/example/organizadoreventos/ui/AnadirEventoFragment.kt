@@ -260,8 +260,8 @@ class AnadirEventoFragment : Fragment() {
 
     private fun guardarNuevoEvento() {
         val categoria = binding.tabCategoria.getTabAt(binding.tabCategoria.selectedTabPosition)?.text.toString()
-        val fecha = binding.etFecha.text.toString()     // Ej: "2025-06-15"
-        val hora = binding.etHora.text.toString()       // Ej: "14:30"
+        val fecha = binding.etFecha.text.toString()
+        val hora = binding.etHora.text.toString()
         val descripcion = binding.etDescripcion.text.toString()
         val status = binding.spinnerStatus.selectedItem.toString()
         val ubicacion = binding.etUbicacion.text.toString()

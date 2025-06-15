@@ -126,11 +126,8 @@ object DropboxBackupHelper {
                 }
 
                 withContext(Dispatchers.Main) {
+                    eventoViewModel.eliminarTodosLosEventos()
                     val eventosSinId = eventos.map { it.copy(idEvento = 0) }
-                    Log.d("RestaurarEventos", "Eventos preparados para insertar (sin ID): ${eventosSinId.size}")
-                    eventosSinId.forEachIndexed { index, evento ->
-                        Log.d("RestaurarEventos", "InsertarEvento[$index]: $evento")
-                    }
                     eventoViewModel.insertarTodosLosEventos(eventosSinId)
                     Toast.makeText(context, "Restaurado: $nombreArchivo", Toast.LENGTH_SHORT).show()
                 }
