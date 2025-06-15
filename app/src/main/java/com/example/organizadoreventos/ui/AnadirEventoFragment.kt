@@ -1,8 +1,12 @@
 package com.example.organizadoreventos.ui
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -17,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import com.example.organizadoreventos.NotificacionReceiver
 import com.example.organizadoreventos.R
 import com.example.organizadoreventos.data.entities.Evento
 import com.example.organizadoreventos.databinding.FragmentAnadirEventoBinding
@@ -24,6 +29,7 @@ import com.example.organizadoreventos.viewmodel.EventoViewModel
 import com.google.android.libraries.places.api.Places
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class AnadirEventoFragment : Fragment() {
@@ -110,7 +116,6 @@ class AnadirEventoFragment : Fragment() {
     }
 
     private fun loadEventDataForEdit(bundle: Bundle) {
-        // Almacenar el evento completo para facilitar la eliminación si es necesario
         currentEvento = Evento(
             idEvento = bundle.getInt("eventId"),
             idUsuario = 1,
@@ -255,8 +260,8 @@ class AnadirEventoFragment : Fragment() {
 
     private fun guardarNuevoEvento() {
         val categoria = binding.tabCategoria.getTabAt(binding.tabCategoria.selectedTabPosition)?.text.toString()
-        val fecha = binding.etFecha.text.toString()
-        val hora = binding.etHora.text.toString()
+        val fecha = binding.etFecha.text.toString()     // Ej: "2025-06-15"
+        val hora = binding.etHora.text.toString()       // Ej: "14:30"
         val descripcion = binding.etDescripcion.text.toString()
         val status = binding.spinnerStatus.selectedItem.toString()
         val ubicacion = binding.etUbicacion.text.toString()
@@ -283,8 +288,87 @@ class AnadirEventoFragment : Fragment() {
         eventoViewModel.insertarEvento(evento)
         Toast.makeText(requireContext(), "Evento guardado exitosamente", Toast.LENGTH_LONG).show()
         logEventData(evento)
+
+        // --- Programar notificación si aplica ---
+        if (recordatorio != "Sin recordatorio") {
+            val fechaHoraEvento = parsearFechaHora(fecha, hora)
+            val fechaHoraRecordatorio = Calendar.getInstance().apply {
+                time = fechaHoraEvento.time
+                when (recordatorio) {
+                    "10 minutos antes" -> add(Calendar.MINUTE, -10)
+                    "1 día antes" -> add(Calendar.DAY_OF_YEAR, -1)
+                    else -> {}
+                }
+            }
+
+            if (fechaHoraRecordatorio.timeInMillis > System.currentTimeMillis()) {
+                programarRecordatorio(
+                    requireContext(),
+                    descripcion,
+                    evento.hashCode(),
+                    fechaHoraRecordatorio
+                )
+            } else {
+                Log.d("Recordatorio", "No se programa recordatorio porque la fecha/hora ya pasó")
+            }
+        }
+
         clearFormFields()
     }
+
+    fun cancelarRecordatorio(context: Context, idEvento: Int) {
+        val intent = Intent(context, NotificacionReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            idEvento,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
+        Log.d("Recordatorio", "Alarma cancelada para evento $idEvento")
+    }
+
+
+    fun programarRecordatorio(
+        contexto: Context,
+        descripcion: String,
+        idEvento: Int,
+        fechaHoraRecordatorio: Calendar
+    ) {
+        Log.d("Recordatorio", "Programando recordatorio para evento $idEvento a las ${fechaHoraRecordatorio.time}")
+
+        val intent = Intent(contexto, NotificacionReceiver::class.java).apply {
+            putExtra("descripcion", descripcion)
+            putExtra("idEvento", idEvento)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            contexto,
+            idEvento, // requestCode único por evento
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val alarmManager = contexto.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            fechaHoraRecordatorio.timeInMillis,
+            pendingIntent
+        )
+
+        Log.d("Recordatorio", "Alarma programada con AlarmManager")
+    }
+
+    private fun parsearFechaHora(fecha: String, hora: String): Calendar {
+        val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+        val fechaCompleta = "$fecha $hora"
+        val calendar = Calendar.getInstance()
+        calendar.time = formato.parse(fechaCompleta) ?: Date()
+        return calendar
+    }
+
 
     private fun actualizarEvento() {
         val id = eventIdToEdit ?: run {
@@ -323,7 +407,33 @@ class AnadirEventoFragment : Fragment() {
         logEventData(eventoActualizado)
         clearFormFields()
 
-        // Volver al fragmento anterior después de actualizar
+        cancelarRecordatorio(requireContext(), id)
+        val fechaHora = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
+            .parse("${eventoActualizado.fecha} ${eventoActualizado.hora}")
+
+        if (fechaHora != null) {
+            val fechaHoraEvento = Calendar.getInstance().apply { time = fechaHora }
+
+            val minutosAntes = when (eventoActualizado.recordatorio) {
+                "10 minutos antes" -> 10
+                "1 día antes" -> 24 * 60
+                else -> null
+            }
+
+            minutosAntes?.let {
+                val fechaHoraRecordatorio = Calendar.getInstance().apply {
+                    timeInMillis = fechaHoraEvento.timeInMillis
+                    add(Calendar.MINUTE, -it)
+                }
+
+                programarRecordatorio(
+                    requireContext(),
+                    eventoActualizado.descripcion,
+                    eventoActualizado.idEvento,
+                    fechaHoraRecordatorio
+                )
+            }
+        }
         requireActivity().supportFragmentManager.popBackStack()
     }
 
@@ -333,9 +443,9 @@ class AnadirEventoFragment : Fragment() {
             .setMessage("¿Estás seguro de que quieres eliminar este evento?")
             .setPositiveButton("Sí") { dialog, _ ->
                 currentEvento?.let { evento ->
+                    cancelarRecordatorio(requireContext(), evento.idEvento)
                     eventoViewModel.eliminarEvento(evento)
                     Toast.makeText(requireContext(), "Evento eliminado.", Toast.LENGTH_SHORT).show()
-                    // Después de eliminar, limpiar formulario y volver a la pantalla anterior
                     clearFormFields()
                     requireActivity().supportFragmentManager.popBackStack()
                 } ?: run {
