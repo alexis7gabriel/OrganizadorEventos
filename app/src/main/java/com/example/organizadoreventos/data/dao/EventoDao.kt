@@ -29,4 +29,5 @@ interface EventoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodosLosEventos(eventos: List<Evento>)
+
 }
