@@ -102,6 +102,7 @@ class SeleccionarLugarFragment : Fragment(), OnMapReadyCallback {
                 selectedAddress = fullAddress
                 binding.tvSelectedAddress.text = fullAddress
                 binding.tvSelectedAddress.visibility = View.VISIBLE
+                Log.d("LocationSelection", "Dirección encontrada: $fullAddress")
             } else {
                 selectedAddress = "${latLng.latitude}, ${latLng.longitude}"
                 binding.tvSelectedAddress.text = "Sin dirección: ${selectedAddress}"

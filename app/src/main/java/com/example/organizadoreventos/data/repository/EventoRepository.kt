@@ -1,6 +1,5 @@
 package com.example.organizadoreventos.data.repository
 
-import android.util.Log
 import com.example.organizadoreventos.data.dao.EventoDao
 import com.example.organizadoreventos.data.entities.Evento
 import kotlinx.coroutines.flow.Flow
