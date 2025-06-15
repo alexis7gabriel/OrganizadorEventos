@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
 
     implementation(libs.androidx.room.runtime)
+    implementation(libs.firebase.crashlytics.buildtools)
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
 
@@ -64,4 +65,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("com.dropbox.core:dropbox-core-sdk:5.4.5")
 }

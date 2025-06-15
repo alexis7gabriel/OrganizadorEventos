@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.organizadoreventos.data.entities.Evento
 import kotlinx.coroutines.flow.Flow
@@ -29,4 +30,12 @@ interface EventoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertarTodosLosEventos(eventos: List<Evento>)
+
+    @Transaction
+    suspend fun insertarEventosUnoPorUno(eventos: List<Evento>) {
+        eventos.forEach {
+            insertarEvento(it)
+        }
+    }
+
 }

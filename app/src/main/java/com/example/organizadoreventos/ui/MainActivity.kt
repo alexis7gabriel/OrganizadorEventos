@@ -1,20 +1,25 @@
 package com.example.organizadoreventos.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import com.example.organizadoreventos.R
 import com.example.organizadoreventos.ui.fragmentos.ConsultarFragment
 import com.example.organizadoreventos.ui.fragmentos.InicioFragment
+import com.example.organizadoreventos.viewmodel.EventoViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationView
+import observeOnce
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var toggle: ActionBarDrawerToggle
+    private lateinit var eventoViewModel: EventoViewModel
     private lateinit var navigationView: NavigationView
     private lateinit var bottomNav: BottomNavigationView
 
@@ -29,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+        eventoViewModel = ViewModelProvider(this)[EventoViewModel::class.java]
 
         // Configuración de DrawerLayout
         toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer)
@@ -56,6 +62,22 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_salir_drawer -> {
                     finish()
+                }
+                R.id.nav_respaldo -> {
+                    eventoViewModel.todosLosEventos.observeOnce(this) { eventos ->
+                        if (eventos.isNotEmpty()) {
+                            DropboxBackupHelper.subirRespaldo(this, eventos)
+                        } else {
+                            Toast.makeText(this, "No hay eventos para respaldar", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
+                }
+                R.id.nav_restaurar -> {
+                    DropboxBackupHelper.mostrarDialogoRespaldo(this, eventoViewModel)
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    true
                 }
             }
             drawerLayout.closeDrawer(GravityCompat.START)
